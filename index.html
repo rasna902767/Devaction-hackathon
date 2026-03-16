@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Feastly – Food Delivered Fast</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;} 
+:root{
+  --red:#E83A3A;
+  --orange:#FF7043;
+  --cream:#FFF8F0;
+  --dark:#1A1208;
+  --mid:#3D2B1F;
+  --text:#2C1A0E;
+  --muted:#8A7060;
+  --border:#EDE0D4;
+  --white:#FFFFFF;
+  --card:#FFFCF8;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;cursor:none;}
+
+/* Custom cursor */
+.cursor{position:fixed;width:12px;height:12px;background:var(--red);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s ease,width .2s,height .2s,background .2s;}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1.5px solid var(--red);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .08s ease,width .25s,height .25s,opacity .2s;opacity:.5;}
+body:has(a:hover) .cursor,.cursor.hovered{width:20px;height:20px;background:var(--orange);}
+body:has(a:hover) .cursor-ring,.cursor-ring.hovered{width:52px;height:52px;opacity:.3;}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 4rem;
+  background:rgba(255,248,240,0.88);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  animation:slideDown .7s ease forwards;
+}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.nav-logo{
+  font-family:'Fraunces',serif;font-weight:900;font-size:1.8rem;
+  color:var(--red);letter-spacing:-.02em;
+  text-decoration:none;
+}
+.nav-logo span{color:var(--orange);}
+.nav-location{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.875rem;color:var(--muted);cursor:pointer;
+  padding:.4rem .8rem;border-radius:8px;
+  transition:background .2s;
+}
+.nav-location:hover{background:var(--border);}
+.nav-location svg{color:var(--red);}
+.nav-links{display:flex;align-items:center;gap:2rem;}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--mid);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--red);}
+.nav-btns{display:flex;gap:.8rem;}
+.btn-ghost{
+  padding:.5rem 1.2rem;border-radius:10px;
+  border:1.5px solid var(--border);background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;
+  color:var(--text);cursor:pointer;transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--red);color:var(--red);}
+.btn-primary{
+  padding:.55rem 1.4rem;border-radius:10px;
+  border:none;background:var(--red);
+  font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:600;
+  color:#fff;cursor:pointer;transition:all .2s;
+  box-shadow:0 4px 14px rgba(232,58,58,.3);
+}
+.btn-primary:hover{background:var(--orange);transform:translateY(-1px);box-shadow:0 6px 18px rgba(255,112,67,.35);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding:7rem 4rem 4rem;
+  gap:3rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;
+  top:-20%;right:-10%;
+  width:700px;height:700px;
+  background:radial-gradient(circle, rgba(255,112,67,.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-left{animation:heroLeft 1s ease .2s both;}
+@keyframes heroLeft{from{opacity:0;transform:translateX(-40px);}to{opacity:1;transform:translateX(0);}}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(232,58,58,.08);border:1px solid rgba(232,58,58,.2);
+  color:var(--red);font-size:.8rem;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;padding:.35rem 1rem;border-radius:20px;
+  margin-bottom:1.5rem;
+}
+.hero-eyebrow::before{content:'●';font-size:.5rem;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.hero h1{
+  font-family:'Fraunces',serif;font-weight:900;
+  font-size:clamp(2.8rem,5vw,4.5rem);line-height:1.05;
+  letter-spacing:-.03em;color:var(--dark);margin-bottom:1.4rem;
+}
+.hero h1 em{font-style:italic;color:var(--red);}
+.hero-sub{
+  font-size:1.05rem;color:var(--muted);line-height:1.75;
+  max-width:460px;margin-bottom:2.2rem;
+}
+
+/* Search bar */
+.search-bar{
+  display:flex;align-items:center;
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:16px;padding:.5rem .5rem .5rem 1.2rem;
+  box-shadow:0 8px 32px rgba(0,0,0,.07);
+  max-width:500px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.search-bar:focus-within{border-color:var(--red);box-shadow:0 8px 32px rgba(232,58,58,.12);}
+.search-bar input{
+  flex:1;border:none;outline:none;background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--text);
+}
+.search-bar input::placeholder{color:var(--muted);}
+.search-btn{
+  background:var(--red);color:#fff;border:none;
+  padding:.75rem 1.5rem;border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-weight:600;font-size:.9rem;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.search-btn:hover{background:var(--orange);}
+
+.hero-stats{
+  display:flex;gap:2.5rem;margin-top:2rem;
+}
+.stat-item{}
+.stat-num{
+  font-family:'Fraunces',serif;font-size:1.8rem;font-weight:900;
+  color:var(--dark);letter-spacing:-.02em;
+}
+.stat-label{font-size:.8rem;color:var(--muted);font-weight:500;margin-top:.1rem;}
+
+/* Hero right – food cards mosaic */
+.hero-right{
+  position:relative;height:500px;
+  animation:heroRight 1s ease .4s both;
+}
+@keyframes heroRight{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+.food-mosaic{
+  position:absolute;inset:0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:16px;
+}
+.mosaic-card{
+  border-radius:20px;overflow:hidden;position:relative;
+  box-shadow:0 16px 40px rgba(0,0,0,.12);
+  transition:transform .4s ease,box-shadow .4s ease;
+}
+.mosaic-card:hover{transform:scale(1.03);box-shadow:0 20px 50px rgba(0,0,0,.18);}
+.mosaic-card:nth-child(1){grid-row:span 2;border-radius:24px;}
+.mosaic-card img{width:100%;height:100%;object-fit:cover;display:block;}
+.mosaic-card .card-label{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:.9rem 1rem;
+  background:linear-gradient(to top,rgba(0,0,0,.7),transparent);
+  color:#fff;font-weight:600;font-size:.85rem;
+}
+.floating-badge{
+  position:absolute;top:-12px;right:30px;
+  background:var(--red);color:#fff;
+  font-size:.75rem;font-weight:700;letter-spacing:.05em;
+  padding:.4rem 1rem;border-radius:20px;
+  box-shadow:0 6px 20px rgba(232,58,58,.4);
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.delivery-badge{
+  position:absolute;bottom:30px;left:-20px;
+  background:#fff;
+  border-radius:16px;padding:.8rem 1.1rem;
+  box-shadow:0 12px 36px rgba(0,0,0,.12);
+  display:flex;align-items:center;gap:.7rem;
+  animation:float 3.5s ease-in-out .5s infinite;
+}
+.delivery-badge .icon{font-size:1.5rem;}
+.delivery-badge .info{}
+.delivery-badge .info strong{display:block;font-size:.8rem;color:var(--dark);}
+.delivery-badge .info span{font-size:.7rem;color:var(--muted);}
+
+/* ── SECTION WRAPPER ── */
+section{padding:5rem 4rem;}
+.section-header{margin-bottom:3rem;}
+.section-eyebrow{
+  font-size:.75rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--red);margin-bottom:.6rem;
+}
+.section-title{
+  font-family:'Fraunces',serif;font-weight:900;
+  font-size:clamp(2rem,3.5vw,2.8rem);color:var(--dark);
+  letter-spacing:-.025em;line-height:1.15;
+}
+.section-title em{font-style:italic;color:var(--orange);}
+
+/* ── CATEGORIES ── */
+.categories{background:var(--white);}
+.cat-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:1.2rem;
+}
+.cat-card{
+  background:var(--cream);border-radius:18px;padding:1.4rem 1rem;
+  text-align:center;cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .25s ease;
+  position:relative;overflow:hidden;
+}
+.cat-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--red),var(--orange));
+  opacity:0;transition:opacity .25s;
+}
+.cat-card:hover{border-color:var(--red);transform:translateY(-4px);box-shadow:0 12px 32px rgba(232,58,58,.15);}
+.cat-card:hover::before{opacity:.05;}
+.cat-card:hover .cat-emoji{transform:scale(1.2) rotate(-5deg);}
+.cat-emoji{font-size:2.2rem;margin-bottom:.6rem;display:block;transition:transform .3s ease;}
+.cat-name{font-size:.8rem;font-weight:600;color:var(--mid);}
+
+/* ── RESTAURANTS ── */
+.restaurants{background:var(--cream);}
+.rest-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;
+}
+.rest-card{
+  background:var(--white);border-radius:20px;overflow:hidden;
+  border:1px solid var(--border);
+  transition:transform .3s ease,box-shadow .3s ease;
+  cursor:pointer;
+}
+.rest-card:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(0,0,0,.1);}
+.rest-img{
+  width:100%;height:180px;object-fit:cover;
+  display:block;transition:transform .4s ease;
+}
+.rest-card:hover .rest-img{transform:scale(1.04);}
+.rest-img-wrap{overflow:hidden;position:relative;}
+.rest-badge{
+  position:absolute;top:12px;left:12px;
+  background:rgba(26,18,8,.75);
+  backdrop-filter:blur(6px);
+  color:#fff;font-size:.7rem;font-weight:700;
+  padding:.3rem .7rem;border-radius:8px;letter-spacing:.05em;
+}
+.rest-badge.offer{background:var(--red);}
+.rest-info{padding:1.2rem;}
+.rest-name{
+  font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;
+  color:var(--dark);margin-bottom:.3rem;
+}
+.rest-meta{
+  display:flex;align-items:center;gap:.8rem;
+  font-size:.8rem;color:var(--muted);margin-bottom:.8rem;
+}
+.rest-rating{
+  display:flex;align-items:center;gap:.3rem;
+  background:#E8F5E9;color:#2E7D32;
+  font-weight:700;font-size:.8rem;
+  padding:.2rem .5rem;border-radius:6px;
+}
+.rest-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
+.rest-tag{
+  font-size:.72rem;color:var(--muted);
+  background:var(--cream);padding:.2rem .6rem;border-radius:6px;
+}
+.rest-footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.8rem 1.2rem;border-top:1px solid var(--border);
+  font-size:.78rem;color:var(--muted);
+}
+.rest-footer strong{color:var(--text);}
+
+/* ── HOW IT WORKS ── */
+.how{background:var(--dark);color:#fff;}
+.how .section-title{color:#fff;}
+.how .section-eyebrow{color:var(--orange);}
+.steps{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;
+  margin-top:3rem;
+}
+.step{text-align:center;position:relative;}
+.step:not(:last-child)::after{
+  content:'→';
+  position:absolute;right:-1rem;top:2rem;
+  font-size:1.5rem;color:rgba(255,255,255,.2);
+}
+.step-num{
+  width:64px;height:64px;border-radius:20px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin:0 auto 1.2rem;
+  transition:background .3s;
+}
+.step:hover .step-num{background:rgba(232,58,58,.2);border-color:rgba(232,58,58,.4);}
+.step-title{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:#fff;}
+.step-desc{font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.65;}
+
+/* ── OFFERS BANNER ── */
+.offers-banner{
+  background:linear-gradient(135deg,var(--red),var(--orange));
+  padding:4rem;
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:28px;margin:0 4rem;
+  position:relative;overflow:hidden;
+}
+.offers-banner::before{
+  content:'';position:absolute;right:-60px;top:-60px;
+  width:300px;height:300px;
+  background:rgba(255,255,255,.08);
+  border-radius:50%;
+}
+.offers-banner::after{
+  content:'';position:absolute;right:80px;bottom:-80px;
+  width:200px;height:200px;
+  background:rgba(255,255,255,.06);
+  border-radius:50%;
+}
+.banner-text h2{
+  font-family:'Fraunces',serif;font-weight:900;font-size:2.2rem;
+  color:#fff;letter-spacing:-.02em;margin-bottom:.5rem;
+}
+.banner-text p{color:rgba(255,255,255,.85);font-size:1rem;}
+.banner-code{
+  background:rgba(255,255,255,.15);border:2px dashed rgba(255,255,255,.5);
+  color:#fff;font-family:'Fraunces',serif;font-weight:900;font-size:2rem;
+  letter-spacing:.1em;padding:1rem 2.5rem;border-radius:16px;
+  position:relative;z-index:1;cursor:pointer;
+  transition:background .2s;
+}
+.banner-code:hover{background:rgba(255,255,255,.25);}
+.banner-code small{display:block;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:400;opacity:.8;letter-spacing:0;margin-top:.2rem;}
+
+/* ── APP SECTION ── */
+.app-section{
+  background:var(--cream);
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:4rem;
+  padding:6rem 4rem;
+}
+.app-left .section-eyebrow{color:var(--red);}
+.app-left h2{
+  font-family:'Fraunces',serif;font-weight:900;
+  font-size:clamp(2rem,3vw,2.8rem);color:var(--dark);
+  letter-spacing:-.025em;margin-bottom:1rem;
+}
+.app-left p{color:var(--muted);line-height:1.75;margin-bottom:2rem;}
+.app-badges{display:flex;gap:1rem;}
+.app-badge{
+  display:flex;align-items:center;gap:.8rem;
+  background:var(--dark);color:#fff;
+  padding:.8rem 1.4rem;border-radius:14px;
+  cursor:pointer;transition:all .2s;
+}
+.app-badge:hover{background:var(--mid);transform:translateY(-2px);}
+.app-badge svg{width:24px;height:24px;}
+.app-badge div{line-height:1.2;}
+.app-badge small{font-size:.65rem;opacity:.7;display:block;}
+.app-badge strong{font-size:.9rem;}
+.app-right{
+  position:relative;
+  display:flex;justify-content:center;
+}
+.phone-mockup{
+  width:240px;
+  background:var(--dark);
+  border-radius:40px;
+  padding:16px;
+  box-shadow:0 40px 80px rgba(0,0,0,.2);
+  position:relative;
+  transform:rotate(3deg);
+}
+.phone-mockup .phone-screen{
+  background:var(--cream);
+  border-radius:28px;
+  height:440px;
+  overflow:hidden;
+  position:relative;
+}
+.phone-top-bar{
+  background:var(--red);padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between;
+}
+.phone-top-bar span{color:#fff;font-size:.7rem;font-weight:700;}
+.phone-content{padding:.8rem;}
+.phone-banner{
+  background:linear-gradient(135deg,#FF7043,#E8222E);
+  border-radius:12px;padding:1rem;margin-bottom:.8rem;
+  color:#fff;
+}
+.phone-banner small{font-size:.6rem;opacity:.8;}
+.phone-banner strong{display:block;font-size:.85rem;margin-bottom:.2rem;}
+.phone-items{display:flex;flex-direction:column;gap:.5rem;}
+.phone-item{
+  background:#fff;border-radius:10px;padding:.7rem .8rem;
+  display:flex;align-items:center;gap:.7rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.phone-item .p-emoji{font-size:1.3rem;}
+.phone-item .p-name{font-size:.72rem;font-weight:600;color:var(--dark);}
+.phone-item .p-price{font-size:.65rem;color:var(--muted);}
+.phone-item .p-add{
+  margin-left:auto;background:var(--red);color:#fff;
+  border:none;width:22px;height:22px;border-radius:6px;
+  font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.phone-secondary{
+  position:absolute;right:-60px;top:60px;
+  width:190px;
+  background:var(--dark);
+  border-radius:30px;
+  padding:12px;
+  box-shadow:0 24px 60px rgba(0,0,0,.18);
+  transform:rotate(-5deg);
+}
+.phone-secondary .phone-screen{
+  background:var(--cream);border-radius:22px;height:320px;overflow:hidden;
+}
+
+/* ── TESTIMONIALS ── */
+.testimonials{background:var(--white);padding:5rem 4rem;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.testi-card{
+  background:var(--cream);border-radius:20px;padding:2rem;
+  border:1px solid var(--border);
+  transition:transform .3s,box-shadow .3s;
+}
+.testi-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.07);}
+.testi-stars{color:var(--orange);font-size:1rem;margin-bottom:1rem;letter-spacing:.1em;}
+.testi-text{font-size:.9rem;line-height:1.75;color:var(--mid);margin-bottom:1.2rem;font-style:italic;}
+.testi-user{display:flex;align-items:center;gap:.8rem;}
+.testi-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--red),var(--orange));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;color:#fff;font-size:.9rem;
+}
+.testi-name{font-weight:600;font-size:.875rem;color:var(--dark);}
+.testi-loc{font-size:.75rem;color:var(--muted);}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--dark);color:rgba(255,255,255,.6);
+  padding:4rem 4rem 2rem;
+}
+.footer-top{
+  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;
+  margin-bottom:3rem;padding-bottom:3rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.footer-brand .logo{
+  font-family:'Fraunces',serif;font-weight:900;font-size:1.8rem;
+  color:#fff;margin-bottom:.8rem;display:block;
+}
+.footer-brand .logo span{color:var(--orange);}
+.footer-brand p{font-size:.875rem;line-height:1.75;max-width:280px;}
+.footer-col h4{color:#fff;font-weight:600;font-size:.9rem;margin-bottom:1.2rem;}
+.footer-col a{
+  display:block;font-size:.85rem;margin-bottom:.6rem;
+  color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s;
+}
+.footer-col a:hover{color:var(--orange);}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.8rem;
+}
+.footer-socials{display:flex;gap:1rem;}
+.social-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;cursor:pointer;transition:all .2s;text-decoration:none;color:#fff;
+}
+.social-btn:hover{background:var(--red);border-color:var(--red);}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--cream);}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  nav{padding:1rem 2rem;}
+  .hero{grid-template-columns:1fr;padding:6rem 2rem 3rem;text-align:center;}
+  .hero-right{display:none;}
+  .hero-sub,.search-bar{max-width:100%;}
+  .hero-stats{justify-content:center;}
+  .cat-grid{grid-template-columns:repeat(3,1fr);}
+  .rest-grid{grid-template-columns:1fr 1fr;}
+  section{padding:4rem 2rem;}
+  .offers-banner{flex-direction:column;gap:1.5rem;margin:0 2rem;}
+  .app-section{grid-template-columns:1fr;padding:4rem 2rem;}
+  .phone-secondary{display:none;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+  .steps{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a class="nav-logo" href="#">Feast<span>ly</span></a>
+  <div class="nav-location">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    Mumbai, Maharashtra
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="nav-links">
+    <a href="#">Restaurants</a>
+    <a href="#">Offers</a>
+    <a href="#">Help</a>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-ghost">Log in</button>
+    <button class="btn-primary">Sign up</button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">🔥 &nbsp;20,000+ restaurants near you</div>
+    <h1>Order food<br/>you'll <em>absolutely</em><br/>love.</h1>
+    <p class="hero-sub">From street food to fine dining — discover, order, and get it delivered fresh to your doorstep in under 30 minutes.</p>
+    <div class="search-bar">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A7060" stroke-width="2" style="flex-shrink:0;margin-right:.4rem"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search restaurants, cuisines or dishes…"/>
+      <button class="search-btn">Search</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">25K+</div><div class="stat-label">Restaurants</div></div>
+      <div class="stat-item"><div class="stat-num">2M+</div><div class="stat-label">Happy orders</div></div>
+      <div class="stat-item"><div class="stat-num">28min</div><div class="stat-label">Avg delivery</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="floating-badge">🔥 500+ New Today</div>
+    <div class="food-mosaic">
+      <div class="mosaic-card">
+        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&q=80" alt="Pizza"/>
+        <div class="card-label">🍕 Wood-fired Pizza</div>
+      </div>
+      <div class="mosaic-card">
+        <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=80" alt="Burger"/>
+        <div class="card-label">🍔 Juicy Burgers</div>
+      </div>
+      <div class="mosaic-card">
+        <img src="https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&q=80" alt="Sushi"/>
+        <div class="card-label">🍣 Fresh Sushi</div>
+      </div>
+    </div>
+    <div class="delivery-badge">
+      <div class="icon">🛵</div>
+      <div class="info"><strong>Delivering now</strong><span>Est. 22 min · ₹0 fee</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CATEGORIES ── -->
+<section class="categories reveal">
+  <div class="section-header">
+    <div class="section-eyebrow">Browse by cuisine</div>
+    <h2 class="section-title">What are you <em>craving?</em></h2>
+  </div>
+  <div class="cat-grid">
+    <div class="cat-card"><span class="cat-emoji">🍕</span><div class="cat-name">Pizza</div></div>
+    <div class="cat-card"><span class="cat-emoji">🍔</span><div class="cat-name">Burgers</div></div>
+    <div class="cat-card"><span class="cat-emoji">🍜</span><div class="cat-name">Noodles</div></div>
+    <div class="cat-card"><span class="cat-emoji">🍣</span><div class="cat-name">Sushi</div></div>
+    <div class="cat-card"><span class="cat-emoji">🍛</span><div class="cat-name">Biryani</div></div>
+    <div class="cat-card"><span class="cat-emoji">🥗</span><div class="cat-name">Healthy</div></div>
+    <div class="cat-card"><span class="cat-emoji">🌮</span><div class="cat-name">Tacos</div></div>
+    <div class="cat-card"><span class="cat-emoji">🍦</span><div class="cat-name">Desserts</div></div>
+    <div class="cat-card"><span class="cat-emoji">🥪</span><div class="cat-name">Sandwiches</div></div>
+    <div class="cat-card"><span class="cat-emoji">☕</span><div class="cat-name">Café</div></div>
+    <div class="cat-card"><span class="cat-emoji">🍗</span><div class="cat-name">Chicken</div></div>
+    <div class="cat-card"><span class="cat-emoji">🥘</span><div class="cat-name">Thali</div></div>
+  </div>
+</section>
+
+<!-- ── RESTAURANTS ── -->
+<section class="restaurants reveal">
+  <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+    <div>
+      <div class="section-eyebrow">Trending near you</div>
+      <h2 class="section-title">Top-rated <em>picks</em></h2>
+    </div>
+    <a href="#" style="color:var(--red);font-weight:600;font-size:.9rem;text-decoration:none;">View all →</a>
+  </div>
+  <div class="rest-grid">
+
+    <div class="rest-card">
+      <div class="rest-img-wrap">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80" alt="Restaurant"/>
+        <div class="rest-badge offer">50% OFF up to ₹100</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">The Spice Route</div>
+        <div class="rest-meta">
+          <span class="rest-rating">⭐ 4.6</span>
+          <span>25–35 min</span>
+          <span>₹200 for two</span>
+        </div>
+        <div class="rest-tags">
+          <span class="rest-tag">North Indian</span>
+          <span class="rest-tag">Biryani</span>
+          <span class="rest-tag">Kebabs</span>
+        </div>
+      </div>
+      <div class="rest-footer"><span>Free delivery</span><strong>Opens 11am</strong></div>
+    </div>
+
+    <div class="rest-card">
+      <div class="rest-img-wrap">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&q=80" alt="Restaurant"/>
+        <div class="rest-badge">Bestseller</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">Burger Republic</div>
+        <div class="rest-meta">
+          <span class="rest-rating">⭐ 4.4</span>
+          <span>20–30 min</span>
+          <span>₹300 for two</span>
+        </div>
+        <div class="rest-tags">
+          <span class="rest-tag">Burgers</span>
+          <span class="rest-tag">Shakes</span>
+          <span class="rest-tag">Fries</span>
+        </div>
+      </div>
+      <div class="rest-footer"><span>₹30 delivery</span><strong>Open now</strong></div>
+    </div>
+
+    <div class="rest-card">
+      <div class="rest-img-wrap">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&q=80" alt="Restaurant"/>
+        <div class="rest-badge offer">New</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">Sakura Sushi Bar</div>
+        <div class="rest-meta">
+          <span class="rest-rating">⭐ 4.8</span>
+          <span>30–40 min</span>
+          <span>₹700 for two</span>
+        </div>
+        <div class="rest-tags">
+          <span class="rest-tag">Japanese</span>
+          <span class="rest-tag">Sushi</span>
+          <span class="rest-tag">Ramen</span>
+        </div>
+      </div>
+      <div class="rest-footer"><span>Free delivery</span><strong>Open now</strong></div>
+    </div>
+
+    <div class="rest-card">
+      <div class="rest-img-wrap">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&q=80" alt="Restaurant"/>
+        <div class="rest-badge offer">30% OFF</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">Dough & Co.</div>
+        <div class="rest-meta">
+          <span class="rest-rating">⭐ 4.5</span>
+          <span>20–28 min</span>
+          <span>₹400 for two</span>
+        </div>
+        <div class="rest-tags">
+          <span class="rest-tag">Pizza</span>
+          <span class="rest-tag">Pasta</span>
+          <span class="rest-tag">Italian</span>
+        </div>
+      </div>
+      <div class="rest-footer"><span>₹25 delivery</span><strong>Open now</strong></div>
+    </div>
+
+    <div class="rest-card">
+      <div class="rest-img-wrap">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=600&q=80" alt="Restaurant"/>
+        <div class="rest-badge">Top Rated</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">Green Bowl</div>
+        <div class="rest-meta">
+          <span class="rest-rating">⭐ 4.7</span>
+          <span>15–22 min</span>
+          <span>₹350 for two</span>
+        </div>
+        <div class="rest-tags">
+          <span class="rest-tag">Healthy</span>
+          <span class="rest-tag">Salads</span>
+          <span class="rest-tag">Vegan</span>
+        </div>
+      </div>
+      <div class="rest-footer"><span>Free delivery</span><strong>Open now</strong></div>
+    </div>
+
+    <div class="rest-card">
+      <div class="rest-img-wrap">
+        <img class="rest-img" src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600&q=80" alt="Restaurant"/>
+        <div class="rest-badge offer">Free dessert</div>
+      </div>
+      <div class="rest-info">
+        <div class="rest-name">Sweet Endings</div>
+        <div class="rest-meta">
+          <span class="rest-rating">⭐ 4.9</span>
+          <span>25–35 min</span>
+          <span>₹250 for two</span>
+        </div>
+        <div class="rest-tags">
+          <span class="rest-tag">Desserts</span>
+          <span class="rest-tag">Cakes</span>
+          <span class="rest-tag">Waffles</span>
+        </div>
+      </div>
+      <div class="rest-footer"><span>₹20 delivery</span><strong>Open now</strong></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── OFFERS BANNER ── -->
+<div class="offers-banner reveal">
+  <div class="banner-text">
+    <h2>First order? We've got you. 🎉</h2>
+    <p>Get flat 40% off on your first order — no minimum required.</p>
+  </div>
+  <div class="banner-code">FEAST40<small>Tap to copy code</small></div>
+</div>
+
+<!-- ── HOW IT WORKS ── -->
+<section class="how reveal">
+  <div class="section-header">
+    <div class="section-eyebrow">Simple as 1-2-3</div>
+    <h2 class="section-title" style="color:#fff">How <em style="color:var(--orange)">Feastly</em> works</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">📍</div>
+      <div class="step-title">Set your location</div>
+      <div class="step-desc">Tell us where you are and we'll show you the best restaurants near you.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">🍽️</div>
+      <div class="step-title">Browse & choose</div>
+      <div class="step-desc">Explore menus, read reviews, and pick exactly what you're craving.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">💳</div>
+      <div class="step-title">Pay securely</div>
+      <div class="step-desc">UPI, cards, wallets — checkout is fast and completely secure.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">🛵</div>
+      <div class="step-title">Delivered fresh</div>
+      <div class="step-desc">Track your order in real time and get it delivered hot & fresh.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── APP SECTION ── -->
+<div class="app-section reveal">
+  <div class="app-left">
+    <div class="section-eyebrow">Get the app</div>
+    <h2>Order smarter on<br/>the Feastly app</h2>
+    <p>Exclusive app-only deals, faster checkout, live delivery tracking, and personalized recommendations — all in your pocket.</p>
+    <div class="app-badges">
+      <div class="app-badge">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <div><small>Download on the</small><strong>App Store</strong></div>
+      </div>
+      <div class="app-badge">
+        <svg viewBox="0 0 24 24" fill="white"><path d="M3 20.5v-17c0-.83.94-1.3 1.6-.8l14 8.5c.6.37.6 1.23 0 1.6l-14 8.5c-.66.5-1.6.03-1.6-.8z"/></svg>
+        <div><small>Get it on</small><strong>Google Play</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="app-right">
+    <div class="phone-mockup">
+      <div class="phone-screen">
+        <div class="phone-top-bar">
+          <span>Feastly</span>
+          <span>🛒 2</span>
+        </div>
+        <div class="phone-content">
+          <div class="phone-banner">
+            <small>TODAY'S SPECIAL</small>
+            <strong>🔥 40% off on first order</strong>
+          </div>
+          <div class="phone-items">
+            <div class="phone-item"><span class="p-emoji">🍕</span><div><div class="p-name">Margherita Pizza</div><div class="p-price">₹299</div></div><button class="p-add">+</button></div>
+            <div class="phone-item"><span class="p-emoji">🍔</span><div><div class="p-name">Classic Burger</div><div class="p-price">₹199</div></div><button class="p-add">+</button></div>
+            <div class="phone-item"><span class="p-emoji">🍜</span><div><div class="p-name">Veg Noodles</div><div class="p-price">₹149</div></div><button class="p-add">+</button></div>
+            <div class="phone-item"><span class="p-emoji">🍦</span><div><div class="p-name">Vanilla Sundae</div><div class="p-price">₹99</div></div><button class="p-add">+</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phone-secondary">
+      <div class="phone-screen">
+        <div class="phone-top-bar" style="background:var(--orange);">
+          <span>Live Track</span><span>🛵</span>
+        </div>
+        <div style="padding:.8rem;font-size:.65rem;color:var(--mid);">
+          <div style="background:#E8F5E9;border-radius:8px;padding:.6rem;margin-bottom:.6rem;color:#2E7D32;font-weight:600;">Order Picked Up! ✓</div>
+          <div style="background:var(--cream);border-radius:8px;padding:.6rem;margin-bottom:.6rem;">Rider: Rajesh · ⭐ 4.9</div>
+          <div style="background:var(--cream);border-radius:8px;padding:.6rem;text-align:center;">
+            <div style="font-size:1.5rem;">🛵</div>
+            <div style="font-weight:700;font-size:.85rem;color:var(--dark);">12 min away</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials reveal">
+  <div class="section-header">
+    <div class="section-eyebrow">Loved by millions</div>
+    <h2 class="section-title">What our <em>customers</em> say</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Delivery is always on time and the food arrives piping hot. The variety of restaurants is unbelievable. 10/10 would recommend!"</p>
+      <div class="testi-user"><div class="testi-avatar">P</div><div><div class="testi-name">Priya Sharma</div><div class="testi-loc">Mumbai · 200+ orders</div></div></div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The live tracking feature is a game-changer. I know exactly when my food will arrive, and it's always accurate. Love this app!"</p>
+      <div class="testi-user"><div class="testi-avatar">A</div><div><div class="testi-name">Arjun Mehta</div><div class="testi-loc">Delhi · 150+ orders</div></div></div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"Feastly has completely changed how I eat. The deals are amazing and the selection is incredible. My go-to food app!"</p>
+      <div class="testi-user"><div class="testi-avatar">S</div><div><div class="testi-name">Sneha Rao</div><div class="testi-loc">Bangalore · 300+ orders</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="logo">Feast<span>ly</span></span>
+      <p>India's most loved food delivery app. Fresh food, lightning delivery, unbeatable prices.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#">About us</a>
+      <a href="#">Careers</a>
+      <a href="#">Blog</a>
+      <a href="#">Press</a>
+    </div>
+    <div class="footer-col">
+      <h4>For you</h4>
+      <a href="#">Offers</a>
+      <a href="#">Feastly Pro</a>
+      <a href="#">Gift Cards</a>
+      <a href="#">Refer & Earn</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a href="#">Help Centre</a>
+      <a href="#">Partner with us</a>
+      <a href="#">Ride with us</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Feastly Technologies Pvt. Ltd.</span>
+    <div class="footer-socials">
+      <a class="social-btn" href="#">𝕏</a>
+      <a class="social-btn" href="#">in</a>
+      <a class="social-btn" href="#">f</a>
+      <a class="social-btn" href="#">▶</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  }, 80);
+});
+document.querySelectorAll('a,button,.rest-card,.cat-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.classList.add('hovered'); ring.classList.add('hovered'); });
+  el.addEventListener('mouseleave', () => { cursor.classList.remove('hovered'); ring.classList.remove('hovered'); });
+});
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Promo code copy
+document.querySelector('.banner-code').addEventListener('click', function() {
+  navigator.clipboard?.writeText('FEAST40').catch(()=>{});
+  this.style.background = 'rgba(255,255,255,.35)';
+  this.querySelector('small').textContent = '✓ Copied!';
+  setTimeout(() => {
+    this.style.background = '';
+    this.querySelector('small').textContent = 'Tap to copy code';
+  }, 2000);
+});
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  nav.style.boxShadow = window.scrollY > 50 ? '0 4px 24px rgba(0,0,0,.08)' : 'none';
+});
+</script>
+</body>
+</html>
